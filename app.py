@@ -70,7 +70,7 @@ def vectorize_text(tokens, w2v_model, max_len=916):
 
 def process_text(text):
     cleaned = clean_text(text)
-    seq = vectorize_text(cleanedو w2v_model,MAX_SEQUENCE_LENGTH)
+    seq = vectorize_text(cleaned, w2v_model,MAX_SEQUENCE_LENGTH)
     return np.expand_dims(seq, axis=0)
 
 
