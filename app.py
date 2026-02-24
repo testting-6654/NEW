@@ -93,14 +93,8 @@ if st.button("Predict"):
     else:
         with st.spinner("جاري التحليل..."):
             # Preprocessing
-            normalized = normalize_arabic(user_input)
-            cleaned = clean_text(normalized)
-            tokens = cleaned.split()
-            
-            # Vectorize
-            processed = vectorize_text(tokens, w2v_model, max_len=916, vector_size=100)
-            processed = np.expand_dims(processed, axis=0)  # CNN expects batch dimension
-            
+          # CNN expects batch dimension
+            processed = process_text(user_input)
             # Prediction
             prediction = cnn_model.predict(processed)
             predicted_index = int(np.argmax(prediction))
