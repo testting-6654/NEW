@@ -15,8 +15,13 @@ def load_models():
     return cnn, w2v
 
 cnn_model, w2v_model = load_models()
-
-
+class_names = [
+    'Dental medicine',
+    'Dermatology',
+    'Ear, Nose & Throat Problems',
+    'General Medicine',
+    'Ophthalmology & Eye Diseases'
+]
 def clean_text(doc):
     # if text is None:
     #   text = ""
@@ -83,21 +88,27 @@ st.write("أدخل النص وسيتم تصنيفه باستخدام CNN + Word2
 user_input = st.text_area("من ماذا تعاني؟")
 
 if st.button("Predict"):
-
     if user_input.strip() == "":
         st.warning("⚠️ الرجاء إدخال نص")
     else:
         with st.spinner("جاري التحليل..."):
-            processed = process_text(user_input)
-            st.write("Processed shape:", processed.shape)
-            st.write("Processed sample:", processed[0][:10])
+            # Preprocessing
+            normalized = normalize_arabic(user_input)
+            cleaned = clean_text(normalized)
+            tokens = cleaned.split()
+            
+            # Vectorize
+            processed = vectorize_text(tokens, w2v_model, max_len=916, vector_size=100)
+            processed = np.expand_dims(processed, axis=0)  # CNN expects batch dimension
+            
+            # Prediction
             prediction = cnn_model.predict(processed)
-            predicted_class = int(np.argmax(prediction))
+            predicted_index = int(np.argmax(prediction))
             confidence = float(np.max(prediction))
-
-        # Example class labels (EDIT these)
-        classes = ["Class 1", "Class 2", "Class 3", "Class 4", "Class 5"]
+            
+            # Map index to class name
+            predicted_class = class_names[predicted_index]
 
         st.success("✅ تم الإدخال بنجاح")
-        st.write("🔮 التوقع:", classes[predicted_class])
+        st.write("🔮 التوقع:", predicted_class)
         st.write("📊 نسبة الثقة:", f"{confidence*100:.2f}%")
