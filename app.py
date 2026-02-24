@@ -17,9 +17,9 @@ def load_models():
 cnn_model, w2v_model = load_models()
 
 
-def clean_text(text):
-    if text is None:
-      text = ""
+def clean_text(doc):
+    # if text is None:
+    #   text = ""
     chars = '[٠١٢٣٤٥٦٧٨٩0123456789[؟|$|.|!_،,@!#%^&*();<>":``.//\',\']'
     doc = re.sub(r'[^\w]+', ' ', doc)
     doc = re.sub(r'[a-zA-Z]', r'', doc)
