@@ -49,28 +49,28 @@ def clean_text(doc):
 #     return np.array(seq)
 MAX_SEQUENCE_LENGTH = 916
 VECTOR_SIZE = w2v_model.vector_size
-def vectorize_text(tokens, w2v_model, max_len=916):
-    """Converts tokens to a sequence of vectors."""
-    vectors = []
-    for word in tokens:
-        if word in w2v_model.wv:
-            vectors.append(w2v_model.wv[word])
-        else:
-            # Handle out-of-vocabulary words with zeros
-            vectors.append(np.zeros(VECTOR_SIZE))
+def vectorize_text(tokens, w2v_model, max_len=916, vector_size=100):
 
-    # Pad or truncate the sequence to match model input shape
+    vectors = []
+    
+    for word in tokens:
+        if word in w2v_model.key_to_index:  # use .key_to_index for KeyedVectors
+            vectors.append(w2v_model[word])
+        else:
+            vectors.append(np.zeros(vector_size))  # OOV words → zeros
+    
+    # Pad or truncate sequence
     if len(vectors) < max_len:
-        padding = [np.zeros(VECTOR_SIZE)] * (max_len - len(vectors))
+        padding = [np.zeros(vector_size)] * (max_len - len(vectors))
         vectors.extend(padding)
     else:
         vectors = vectors[:max_len]
-
+    
     return np.array(vectors)
 
 def process_text(text):
     cleaned = clean_text(text)
-    seq = vectorize_text(cleaned, w2v_model,MAX_SEQUENCE_LENGTH)
+    seq = vectorize_text(cleaned, w2v_model)
     return np.expand_dims(seq, axis=0)
 
 
