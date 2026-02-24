@@ -11,7 +11,7 @@ st.set_page_config(page_title="Arabic Text Classifier", page_icon="🧠")
 @st.cache_resource
 def load_models():
     cnn = tf.keras.models.load_model("cnn_model.h5")
-    w2v = gensim.models.KeyedVectors.load("word2vec.kv")
+    w2v = gensim.models.KeyedVectors.load("word2vec_model.kv")
     return cnn, w2v
 
 cnn_model, w2v_model = load_models()
