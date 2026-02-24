@@ -25,7 +25,10 @@ def clean_text(text):
     doc = re.sub(chars, '', doc)
     doc = re.sub(r'\s+', ' ', doc)
     doc = " ".join([word for word in doc.split() if len(word) > 2])
-    
+    doc = re.sub(r'[إأآا]', 'ا', doc)
+    doc = doc.replace('ة','ه').replace('ى','ي').replace('ؤ','و').replace('ئ','ي')
+    doc = re.sub("ـ", "", doc)
+    doc = re.sub("[ًٌٍَُِّْ]", "", doc)
     return doc.strip()
 
 
@@ -64,6 +67,8 @@ if st.button("Predict"):
     else:
         with st.spinner("جاري التحليل..."):
             processed = process_text(user_input)
+            st.write("Processed shape:", processed.shape)
+            st.write("Processed sample:", processed[0][:10])
             prediction = cnn_model.predict(processed)
             predicted_class = int(np.argmax(prediction))
             confidence = float(np.max(prediction))
