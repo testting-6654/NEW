@@ -35,23 +35,42 @@ def clean_text(doc):
     return doc
 
 
-def sentence_to_seq(sentence, max_len=916, dim=100):
-    seq = [
-        w2v_model[word] if word in w2v_model else np.zeros(dim)
-        for word in sentence.split()
-    ]
+# def sentence_to_seq(sentence, max_len=916, dim=100):
+#     seq = [
+#         w2v_model[word] if word in w2v_model else np.zeros(dim)
+#         for word in sentence.split()
+#     ]
 
-    if len(seq) < max_len:
-        seq += [np.zeros(dim)] * (max_len - len(seq))
+#     if len(seq) < max_len:
+#         seq += [np.zeros(dim)] * (max_len - len(seq))
+#     else:
+#         seq = seq[:max_len]
+
+#     return np.array(seq)
+MAX_SEQUENCE_LENGTH = 916
+VECTOR_SIZE = w2v_model.vector_size
+def vectorize_text(tokens, w2v_model, max_len=916):
+    """Converts tokens to a sequence of vectors."""
+    vectors = []
+    for word in tokens:
+        if word in w2v_model.wv:
+            vectors.append(w2v_model.wv[word])
+        else:
+            # Handle out-of-vocabulary words with zeros
+            vectors.append(np.zeros(VECTOR_SIZE))
+
+    # Pad or truncate the sequence to match model input shape
+    if len(vectors) < max_len:
+        padding = [np.zeros(VECTOR_SIZE)] * (max_len - len(vectors))
+        vectors.extend(padding)
     else:
-        seq = seq[:max_len]
+        vectors = vectors[:max_len]
 
-    return np.array(seq)
-
+    return np.array(vectors)
 
 def process_text(text):
     cleaned = clean_text(text)
-    seq = sentence_to_seq(cleaned)
+    seq = vectorize_text(cleaned, word2vec_model, MAX_SEQUENCE_LENGTH)
     return np.expand_dims(seq, axis=0)
 
 
