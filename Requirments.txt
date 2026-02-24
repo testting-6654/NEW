@@ -1,0 +1,5 @@
+streamlit
+tensorflow-cpu
+gensim==4.3.2
+numpy
+scipy
