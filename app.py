@@ -18,18 +18,19 @@ cnn_model, w2v_model = load_models()
 
 
 def clean_text(text):
-    chars = r'[٠١٢٣٤٥٦٧٨٩0123456789؟$|.!_،,@!#%^&*();<>":`\'/\\]'
-    
-    doc = re.sub(r'[^\w]+', ' ', text)
-    doc = re.sub(r'[a-zA-Z]', '', doc)
-    doc = re.sub(chars, '', doc)
-    doc = re.sub(r'\s+', ' ', doc)
+    chars = '[٠١٢٣٤٥٦٧٨٩0123456789[؟|$|.|!_،,@!#%^&*();<>":``.//\',\']'
+    doc = re.sub(r'[^\w]+', ' ', doc)
+    doc = re.sub(r'[a-zA-Z]', r'', doc)
+    doc = re.sub(chars, r'', str(doc))
+    doc = re.sub(r'\s+', r' ', doc, flags=re.I)  # remove multiple spaces with single space
     doc = " ".join([word for word in doc.split() if len(word) > 2])
+    doc = doc.replace('\n', ' ')
     doc = re.sub(r'[إأآا]', 'ا', doc)
     doc = doc.replace('ة','ه').replace('ى','ي').replace('ؤ','و').replace('ئ','ي')
     doc = re.sub("ـ", "", doc)
     doc = re.sub("[ًٌٍَُِّْ]", "", doc)
-    return doc.strip()
+
+    return doc
 
 
 def sentence_to_seq(sentence, max_len=916, dim=100):
